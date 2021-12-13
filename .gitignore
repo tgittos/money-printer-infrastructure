@@ -1,0 +1,13 @@
+*.swp
+.ipynb_checkpoints
+__pycache__
+.venv
+src/logs/**/*
+*.log
+.secrets.*
+.gitsecret/keys/random_seed
+*.rdb
+src/platform/ssh/mp-devops
+**/.idea
+.terraform
+.terraform.lock.hcl

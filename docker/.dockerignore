@@ -1,0 +1,9 @@
+.DS_Store
+.git
+.venv
+.winvenv
+.idea
+logs
+.gitignore
+.gitsecret
+node_modules
