@@ -40,7 +40,7 @@ module "api" {
   ecr_repo_url = module.core.ecr_repository_endpoint
   iam_instance_profile_name = module.core.iam_role_name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.subnet_id
+  subnet_id = module.vpc.public_subnet_id
 }
 
 module "ds" {
@@ -49,7 +49,7 @@ module "ds" {
   ecr_repo_url = module.core.ecr_repository_endpoint
   iam_instance_profile_name = module.core.iam_role_name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.subnet_id
+  subnet_id = module.vpc.private_subnet_id
 }
 
 module "tr" {
@@ -58,5 +58,5 @@ module "tr" {
   ecr_repo_url = module.core.ecr_repository_endpoint
   iam_instance_profile_name = module.core.iam_role_name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.subnet_id
+  subnet_id = module.vpc.private_subnet_id
 }

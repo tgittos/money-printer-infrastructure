@@ -1,5 +1,5 @@
 resource "aws_vpc" "mp_vpc" {
-  cidr_block = "10.0.0.0/24"
+  cidr_block = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
 }
@@ -11,11 +11,16 @@ resource "aws_internet_gateway" "mp_ig" {
 // subnets
 resource "aws_subnet" "mp_public_subnet" {
   vpc_id                  = aws_vpc.mp_vpc.id
-  cidr_block              = "10.1.0.0/22"
+  cidr_block              = "10.0.0.0/24"
+}
+
+resource "aws_subnet" "mp_private_subnet" {
+  vpc_id = aws_vpc.mp_vpc.id
+  cidr_block = "10.0.1.0/24"
 }
 
 resource "aws_db_subnet_group" "mp_db_subnet_group" {
-  subnet_ids  = [aws_subnet.mp_public_subnet.id]
+  subnet_ids  = [aws_subnet.mp_private_subnet.id]
 }
 
 // route table
@@ -33,7 +38,7 @@ resource "aws_route_table_association" "mp_rta" {
   route_table_id = aws_route_table.mp_rt_public.id
 }
 
-// security groups - one for app servers, one for db servers
+// security groups
 resource "aws_security_group" "mp_app_ecs_sg" {
   vpc_id      = aws_vpc.mp_vpc.id
 

@@ -1,9 +1,9 @@
 [
   {
     "essential": true,
-    "memory": 512,
+    "memory": 1024,
     "name": "worker",
-    "cpu": 2,
+    "cpu": 1,
     "image": "${REPOSITORY_URL}/data-server:latest",
     "environment": []
   }
