@@ -40,7 +40,7 @@ resource "aws_iam_role" "mp_app_ecs_agent" {
 }
 
 resource "aws_iam_role_policy_attachment" "mp_app_ecs_agent" {
-  role       = "aws_iam_role.mp_app_ecs_agent.name"
+  role       = aws_iam_role.mp_app_ecs_agent.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
@@ -50,14 +50,15 @@ resource "aws_iam_instance_profile" "mp_app_ecs_agent" {
 }
 
 module "vpc" {
-  source = "../modules/vpc"
+  source = "./vpc"
 }
 
 module "aws_runner_ecs" {
   source = "./services/gitlab-runner"
 
+  gitlab_access_token = var.gitlab_access_token
   ecr_repo_url = aws_ecr_repository.mp_app.repository_url
-  iam_instance_profile_name = aws_iam_role.mp_app_ecs_agent.name
+  iam_instance_profile_name = aws_iam_instance_profile.mp_app_ecs_agent.name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.subnet_id
+  subnet_id = module.vpc.public_subnet_1_id
 }

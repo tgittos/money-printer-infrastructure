@@ -1,3 +1,8 @@
+variable "gitlab_access_token" {
+  description = "The access token for the gitlab-runner to use for registration"
+  type = string
+}
+
 variable "ecr_repo_url" {
   description = "The url for the platform's ECR repository (used to push/pull images from builds to envs)"
   type = string

@@ -9,18 +9,34 @@ resource "aws_internet_gateway" "mp_ig" {
 }
 
 // subnets
-resource "aws_subnet" "mp_public_subnet" {
+data "aws_availability_zones" "available" {}
+
+resource "aws_subnet" "mp_public_subnet_1" {
   vpc_id                  = aws_vpc.mp_vpc.id
   cidr_block              = "10.0.0.0/24"
+  availability_zone = data.aws_availability_zones.available.names[0]
 }
 
-resource "aws_subnet" "mp_private_subnet" {
+resource "aws_subnet" "mp_public_subnet_2" {
+  vpc_id                  = aws_vpc.mp_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone = data.aws_availability_zones.available.names[1]
+}
+
+resource "aws_subnet" "mp_private_subnet_1" {
   vpc_id = aws_vpc.mp_vpc.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = "10.0.2.0/24"
+  availability_zone = data.aws_availability_zones.available.names[0]
+}
+
+resource "aws_subnet" "mp_private_subnet_2" {
+  vpc_id = aws_vpc.mp_vpc.id
+  cidr_block = "10.0.3.0/24"
+  availability_zone = data.aws_availability_zones.available.names[1]
 }
 
 resource "aws_db_subnet_group" "mp_db_subnet_group" {
-  subnet_ids  = [aws_subnet.mp_private_subnet.id]
+  subnet_ids  = [aws_subnet.mp_private_subnet_1.id, aws_subnet.mp_private_subnet_2.id]
 }
 
 // route table
@@ -33,8 +49,13 @@ resource "aws_route_table" "mp_rt_public" {
   }
 }
 
-resource "aws_route_table_association" "mp_rta" {
-  subnet_id      = aws_subnet.mp_public_subnet.id
+resource "aws_route_table_association" "mp_rta-1" {
+  subnet_id      = aws_subnet.mp_public_subnet_1.id
+  route_table_id = aws_route_table.mp_rt_public.id
+}
+
+resource "aws_route_table_association" "mp_rta-2" {
+  subnet_id      = aws_subnet.mp_public_subnet_2.id
   route_table_id = aws_route_table.mp_rt_public.id
 }
 

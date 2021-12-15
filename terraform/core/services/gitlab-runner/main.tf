@@ -1,16 +1,20 @@
 
 data "template_file" "runner_task_definition" {
   template = file("${path.module}/build-server.json.tpl")
+}
+
+data "template_file" "user_data" {
+  template = file("${path.module}/user_data.tpl")
   vars = {
-    repository_url = var.ecr_repo_url
+    gitlab_access_token = var.gitlab_access_token
   }
 }
 
 resource "aws_launch_configuration" "mp_runner_ecs_launch_config" {
-  image_id             = "ami-094d4d00fd7462815"
+  image_id             = "ami-00f7e5c52c0f43726"
   iam_instance_profile = var.iam_instance_profile_name
   security_groups      = [var.security_group_id]
-  user_data            = "#!/bin/bash\necho ECS_CLUSTER=mp-runner-ecs-cluster >> /etc/ecs/ecs.config"
+  user_data            = data.template_file.user_data.rendered
   instance_type        = "t2.micro"
 }
 

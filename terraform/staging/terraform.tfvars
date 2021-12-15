@@ -1,0 +1,1 @@
+gitlab_access_token = "glpat-LothY-WpZzCtQSmSW1pM"

@@ -20,16 +20,18 @@ provider "aws" {
 
 module "core" {
   source = "../core"
+
+  gitlab_access_token = var.gitlab_access_token
 }
 
 module "vpc" {
-  source = "../modules/vpc"
+  source = "../core/vpc"
 }
 
 module "mysql" {
   source = "./storage/mysql"
 
-  subnet_group_id = module.vpc.subnet_id
+  subnet_group_id = module.vpc.private_subnet_id
   ecs_security_group_id = module.vpc.ecs_security_group_id
   db_security_group_id = module.vpc.db_security_group_id
 }
@@ -49,7 +51,7 @@ module "ds" {
   ecr_repo_url = module.core.ecr_repository_endpoint
   iam_instance_profile_name = module.core.iam_role_name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.private_subnet_id
+  subnet_id = module.vpc.public_subnet_id
 }
 
 module "tr" {
@@ -58,5 +60,5 @@ module "tr" {
   ecr_repo_url = module.core.ecr_repository_endpoint
   iam_instance_profile_name = module.core.iam_role_name
   security_group_id = module.vpc.ecs_security_group_id
-  subnet_id = module.vpc.private_subnet_id
+  subnet_id = module.vpc.public_subnet_id
 }

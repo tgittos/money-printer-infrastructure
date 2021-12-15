@@ -1,9 +1,17 @@
-output "public_subnet_id" {
-  value = aws_subnet.mp_public_subnet.id
+output "public_subnet_1_id" {
+  value = aws_subnet.mp_public_subnet_1.id
 }
 
-output "private_subnet_id" {
-  value = aws_subnet.mp_private_subnet.id
+output "public_subnet_2_id" {
+  value = aws_subnet.mp_public_subnet_2.id
+}
+
+output "private_subnet_1_id" {
+  value = aws_subnet.mp_private_subnet_1.id
+}
+
+output "private_subnet_2_id" {
+  value = aws_subnet.mp_private_subnet_2.id
 }
 
 output "ecs_security_group_id" {
