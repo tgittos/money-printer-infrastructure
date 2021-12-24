@@ -1,28 +1,70 @@
 FROM alpine:3.14
+LABEL Maintainer="Tim de Pater <code@trafex.nl>"
+LABEL Description="Lightweight container with Nginx 1.20 & PHP 8.0 based on Alpine Linux."
 
-ENV MYSQL_ROOT_PASSWORD=matomo!QAZxsw2
+# Install packages and remove default server definition
+RUN apk --no-cache add \
+  curl \
+  nginx \
+  php8 \
+  php8-ctype \
+  php8-curl \
+  php8-dom \
+  php8-fpm \
+  php8-gd \
+  php8-intl \
+  php8-json \
+  php8-mbstring \
+  php8-mysqli \
+  php8-opcache \
+  php8-openssl \
+  php8-phar \
+  php8-session \
+  php8-simplexml \
+  php8-xml \
+  php8-xmlreader \
+  php8-zlib \
+  php8-pdo \
+  php8-pdo_mysql \
+  supervisor
 
-RUN apk update
-RUN apk add --no-cache openrc unzip curl nginx php7 php7-fpm php7-curl php7-gd php7-cli mysql php7-mysqli php7-xml php7-mbstring mysql-client
+# Create symlink so programs depending on `php` still function
+RUN ln -s /usr/bin/php8 /usr/bin/php
 
-RUN rc-update add nginx
-RUN rc-update add mariadb
+# Configure nginx
+COPY config/nginx.conf /etc/nginx/nginx.conf
 
-RUN adduser -D -g 'www' www
-RUN mkdir /www
-RUN chown -R www:www /var/lib/nginx
-RUN chown -R www:www /www
+# Configure PHP-FPM
+COPY config/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
+COPY config/php.ini /etc/php8/conf.d/custom.ini
 
-COPY init-matomo.sh init-matomo.sh
+# Configure supervisord
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN rm /etc/nginx/nginx.conf
-COPY nginx.conf /etc/nginx/nginx.conf
+# Setup document root
+RUN mkdir -p /var/www/matomo
 
-WORKDIR /www
+# Make sure files/folders needed by the processes are accessable when they run under the nobody user
+RUN chown -R nobody.nobody /var/www && \
+  chown -R nobody.nobody /run && \
+  chown -R nobody.nobody /var/lib/nginx && \
+  chown -R nobody.nobody /var/log/nginx
 
-RUN curl -O https://builds.matomo.org/matomo.zip
+# Switch to use a non-root user from here on
+USER nobody
+
+# Add application
+WORKDIR /var/www
+RUN wget https://builds.matomo.org/matomo.zip
 RUN unzip matomo.zip
+# COPY config/config.ini.php /var/www/matomo/config/.
+RUN rm matomo.zip
 
-WORKDIR /www/matomo
+# Expose the port nginx is reachable on
+EXPOSE 8080
 
-ENTRYPOINT [ "/bin/bash /init-matomo.sh" ]
+# Let supervisord start nginx & php-fpm
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# Configure a healthcheck to validate that everything is up&running
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping

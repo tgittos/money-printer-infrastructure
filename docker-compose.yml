@@ -3,21 +3,21 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./docker/matomo
-    # volumes:
-    #   - matomo-db-data:/var/lib/mysql
-    ports:
-      - 80:80
-      - 443:443
-    entrypoint: [ "/bin/sh", "/init-matomo.sh" ]
+    volumes:
+      - matomo-config:/var/www/matomo/config
     image: mp-matomo
 
   prometheus:
     build:
       dockerfile: Dockerfile
       context: ./docker/prometheus
-    # volumes:
-    #   - prometheus-db-data:/var/lib/mysql
-    ports:
-      - 80:80
-      - 443:443
     image: mp-prometheus
+
+  platform:
+    build:
+      dockerfile: Dockerfile
+      context: ./docker/platform
+    image: money-printer
+
+volumes:
+  matomo-config: null
