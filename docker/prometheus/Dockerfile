@@ -17,5 +17,5 @@ WORKDIR /app/prometheus-2.32.1.linux-amd64
 
 RUN chmod +x prometheus
 
-COPY configuration.yml configuration.yml
+COPY prometheus.yml prometheus.yml
 COPY prometheus.sh prometheus.sh
