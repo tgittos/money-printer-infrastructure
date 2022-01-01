@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mp-app
+spec:
+  containers:
+    - image: ""
+      name: mp-app
+      ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP

@@ -1,0 +1,18 @@
+{
+  "name": "money-printer-infrastructure",
+  "version": "1.0.0",
+  "description": "Money Printer infrastructure task runner",
+  "scripts": {
+    "kubectl": "kubectl --kubeconfig .kube/config"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/money-printer/money-printer-infrastructure.git"
+  },
+  "author": "Tim Gittos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/money-printer/money-printer-infrastructure/issues"
+  },
+  "homepage": "https://gitlab.com/money-printer/money-printer-infrastructure#readme"
+}
