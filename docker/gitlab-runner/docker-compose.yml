@@ -1,7 +1,8 @@
 services:
-  gitlab-runner:
-    container_name: gitlab-runner
+  gitlab-docker-runner:
+    container_name: gitlab-docker-runner
     restart: always
+    privileged: true
     image: gitlab/gitlab-runner
     volumes:
       - ./gitlab-runner/config:/etc/gitlab-runner
