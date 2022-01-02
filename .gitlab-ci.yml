@@ -46,21 +46,25 @@ release:
       docker pull $MATOMO_IMAGE
       docker tag $MATOMO_IMAGE $MATOMO_RELEASE_IMAGE
       docker push $MATOMO_RELEASE_IMAGE
-      docker tag $MATOMO_IMAGE $MATOMO_TAGGED_IMAGE
-      docker push $MATOMO_TAGGED_IMAGE
       docker pull $PROMETHEUS_IMAGE
       docker tag $PROMETHEUS_IMAGE $PROMETHEUS_RELEASE_IMAGE
       docker push $PROMETHEUS_RELEASE_IMAGE
-      docker tag $PROMETHEUS_IMAGE $PROMETHEUS_TAGGED_IMAGE
-      docker push $PROMETHEUS_TAGGED_IMAGE
       docker pull $PLATFORM_IMAGE
       docker tag $PLATFORM_IMAGE $PLATFORM_RELEASE_IMAGE
       docker push $PLATFORM_RELEASE_IMAGE
-      docker tag $PLATFORM_IMAGE $PLATFORM_TAGGED_IMAGE
-      docker push $PLATFORM_TAGGED_IMAGE
+      if [ $CI_COMMIT_TAG ]; then
+        docker tag $PROMETHEUS_IMAGE $PROMETHEUS_TAGGED_IMAGE
+        docker push $PROMETHEUS_TAGGED_IMAGE
+        docker tag $MATOMO_IMAGE $MATOMO_TAGGED_IMAGE
+        docker push $MATOMO_TAGGED_IMAGE
+        docker tag $PLATFORM_IMAGE $PLATFORM_TAGGED_IMAGE
+        docker push $PLATFORM_TAGGED_IMAGE
+      fi;
   rules:
+    # always release if the commit was tagged
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_NAME == "main"'
       when: always
-    - if: '!CI_COMMIT_TAG && $CI_COMMIT_REF_NAME == "main"'
+    # allow manual releasing from the main branch
+    - if: '$CI_COMMIT_TAG == null && $CI_COMMIT_REF_NAME == "main"'
       when: manual
       allow_failure: true
