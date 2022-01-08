@@ -7,8 +7,7 @@ RUN echo APT::Install-Recommends "0"; APT::Install-Suggests "0"; >> /etc/apt/apt
 
 # Install the necessary stuff to build any pip packages from source, just in case
 # the wheel is unavailable for some reason
-RUN apt-get update && apt-get install -y build-essential libffi-dev libxml2-dev libxslt-dev redis\
-    default-mysql-client default-libmysqlclient-dev
+RUN apt-get update && apt-get install -y build-essential libffi-dev libxml2-dev libxslt-dev redis postgresql-client libpq-dev
 
 # Disable python bytecode to reduce disk size
 ENV PYTHONDONTWRITEBYTECODE 1

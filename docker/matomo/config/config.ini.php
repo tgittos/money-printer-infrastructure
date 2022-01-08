@@ -2,17 +2,20 @@
 ; file automatically generated or modified by Matomo; you can manually override the default values in global.ini.php by redefining them in this file.
 [database]
 ; host = "db"
-host = "192.168.144.2"
-username = "mp_dev"
-password = "mp!QAZxsw2"
+host = "<?php $_ENV['MP_DB_HOST'] ?>"
+username = "<?php $_ENV['MP_DB__USERNAME'] ?>"
+password = "<?php $_ENV['MP_DB__PASSWORD'] ?>"
 dbname = "matomo"
 charset = "utf8mb4"
 
 [General]
 salt = "05adaa861577ad8821f59842006d02ea"
 trusted_hosts[] = "localhost"
-trusted_hosts[] = "localhost:8080"
+trusted_hosts[] = "localhost:7070"
 trusted_hosts[] = "moneyprintergobrr.io"
+trusted_hosts[] = "mp-matomo.local"
+proxy_client_headers[] = HTTP_X_FORWARDED_FOR
+proxy_host_headers[] = HTTP_X_FORWARDED_HOST
 
 [PluginsInstalled]
 PluginsInstalled[] = "Diagnostics"

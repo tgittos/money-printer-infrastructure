@@ -5,19 +5,27 @@ services:
       context: ./docker/matomo
     volumes:
       - matomo-config:/var/www/matomo/config
-    image: mp-matomo
+    image: git.gittos.net:5050/money-printer/money-printer-infrastructure/mp-matomo
 
   prometheus:
     build:
       dockerfile: Dockerfile
       context: ./docker/prometheus
-    image: mp-prometheus
+    image: git.gittos.net:5050/money-printer/money-printer-infrastructure/mp-prometheus
 
   platform:
     build:
       dockerfile: Dockerfile
       context: ./docker/platform
-    image: money-printer
+    image: git.gittos.net:5050/money-printer/money-printer-infrastructure/money-printer
+  
+  rproxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./docker/rproxy
+    image: git.gittos.net:5050/money-printer/money-printer-infrastructure/mp-rproxy
+    volumes:
+      - ./templates:/etc/nginx/templates
 
 volumes:
   matomo-config: null

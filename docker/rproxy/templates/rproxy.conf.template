@@ -1,0 +1,91 @@
+http {
+  index      index.html index.htm;
+
+  # define upstream services here
+  upstream ngrok {
+    server ${NGROK_HOST}:4040;
+  }
+
+  # TODO figure out how to change matomo's port or something
+  upstream matomo {
+    server ${MATOMO_HOST}:7070;
+  }
+
+  upstream prometheus {
+    server ${PROMETHEUS_HOST}:9090;
+  }
+
+  upstream hasura {
+    server ${HASURA_HOST}:8080;
+  }
+
+  upstream api {
+    server ${API_HOST}:5000;
+  }
+
+  # stonks is broken for now
+  # upstream stonks {
+  #   server ${STONKS_HOST}:5001;
+  # }
+
+  server {
+    listen       80;
+    server_name  mp-ngrok.local;
+    access_log   logs/ngrok.access.log;
+
+    location / {
+      proxy_pass      http://ngrok;
+    }
+  }
+
+  server {
+    listen       80;
+    server_name  mp-matomo.local;
+    access_log   logs/matomo.access.log;
+
+    location / {
+      proxy_pass      http://matomo;
+    }
+  }
+
+  server {
+    listen       80;
+    server_name  mp-prometheus.local;
+    access_log   logs/prometheus.access.log;
+
+    location / {
+      proxy_pass      http://prometheus;
+    }
+  }
+
+  server {
+    listen       80;
+    server_name  mp-hasura.local;
+    access_log   logs/hasura.access.log;
+
+    location / {
+      proxy_pass      http://hasura;
+    }
+  }
+
+  server {
+    listen       80;
+    server_name  mp-api.local main;
+    access_log   logs/api.access.log;
+
+    location / {
+      proxy_pass      http://api;
+    }
+  }
+
+  # server {
+  #   listen       80;
+  #   server_name  mp-stonks.local;
+  #   access_log   logs/api.access.log;
+
+  #   location / {
+  #     proxy_pass      http://stonks;
+  #   }
+  # }
+
+}

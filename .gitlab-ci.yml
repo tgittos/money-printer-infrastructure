@@ -1,16 +1,18 @@
 image: git.gittos.net:5050/tgittos/gittos.net/runner-base
 
+include:
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
-  MATOMO_IMAGE: $CI_REGISTRY_IMAGE/mp-matomo:$CI_COMMIT_SHORT_SHA
-  PROMETHEUS_IMAGE: $CI_REGISTRY_IMAGE/mp-prometheus:$CI_COMMIT_SHORT_SHA
-  PLATFORM_IMAGE: $CI_REGISTRY_IMAGE/money-printer:$CI_COMMIT_SHORT_SHA
+  MATOMO_IMAGE: $CI_REGISTRY_IMAGE/mp-matomo
   MATOMO_TAGGED_IMAGE: $CI_REGISTRY_IMAGE/mp-matomo:$CI_COMMIT_TAG
+  PROMETHEUS_IMAGE: $CI_REGISTRY_IMAGE/mp-prometheus
   PROMETHEUS_TAGGED_IMAGE: $CI_REGISTRY_IMAGE/mp-prometheus:$CI_COMMIT_TAG
+  PLATFORM_IMAGE: $CI_REGISTRY_IMAGE/money-printer
   PLATFORM_TAGGED_IMAGE: $CI_REGISTRY_IMAGE/money-printer:$CI_COMMIT_TAG
-  MATOMO_RELEASE_IMAGE: $CI_REGISTRY_IMAGE/mp-matomo:latest
-  PROMETHEUS_RELEASE_IMAGE: $CI_REGISTRY_IMAGE/mp-prometheus:latest
-  PLATFORM_RELEASE_IMAGE: $CI_REGISTRY_IMAGE/money-printer:latest
+  RPROXY_IMAGE: $CI_REGISTRY_IMAGE/money-printer
+  RPROXY_TAGGED_IMAGE: $CI_REGISTRY_IMAGE/money-printer:$CI_COMMIT_TAG
 
 services:
   - docker:dind
@@ -29,37 +31,32 @@ build:
   script:
     - |
       docker-compose build
-      docker tag mp-matomo $MATOMO_IMAGE
       docker push $MATOMO_IMAGE
-      docker tag mp-prometheus $PROMETHEUS_IMAGE
       docker push $PROMETHEUS_IMAGE
-      docker tag money-printer $PLATFORM_IMAGE
       docker push $PLATFORM_IMAGE
+      docker push $RPROXY_IMAGE
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
   
 release:
   stage: release
   script:
     - |
-      docker pull $MATOMO_IMAGE
-      docker tag $MATOMO_IMAGE $MATOMO_RELEASE_IMAGE
-      docker push $MATOMO_RELEASE_IMAGE
       docker pull $PROMETHEUS_IMAGE
-      docker tag $PROMETHEUS_IMAGE $PROMETHEUS_RELEASE_IMAGE
-      docker push $PROMETHEUS_RELEASE_IMAGE
+      docker tag $PROMETHEUS_IMAGE $PROMETHEUS_TAGGED_IMAGE
+      docker push $PROMETHEUS_TAGGED_IMAGE
+      docker pull $MATOMO_IMAGE
+      docker tag $MATOMO_IMAGE $MATOMO_TAGGED_IMAGE
+      docker push $MATOMO_TAGGED_IMAGE
       docker pull $PLATFORM_IMAGE
-      docker tag $PLATFORM_IMAGE $PLATFORM_RELEASE_IMAGE
-      docker push $PLATFORM_RELEASE_IMAGE
-      if [ $CI_COMMIT_TAG ]; then
-        docker tag $PROMETHEUS_IMAGE $PROMETHEUS_TAGGED_IMAGE
-        docker push $PROMETHEUS_TAGGED_IMAGE
-        docker tag $MATOMO_IMAGE $MATOMO_TAGGED_IMAGE
-        docker push $MATOMO_TAGGED_IMAGE
-        docker tag $PLATFORM_IMAGE $PLATFORM_TAGGED_IMAGE
-        docker push $PLATFORM_TAGGED_IMAGE
-      fi;
+      docker tag $PLATFORM_IMAGE $PLATFORM_TAGGED_IMAGE
+      docker push $PLATFORM_TAGGED_IMAGE
+      docker pull $RPROXY_IMAGE
+      docker tag $RPROXY_IMAGE $RPROXY_TAGGED_IMAGE
+      docker push $RPROXY_TAGGED_IMAGE
   rules:
     # always release if the commit was tagged
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_NAME == "main"'

@@ -61,7 +61,7 @@ RUN unzip matomo.zip
 RUN rm matomo.zip
 
 # Expose the port nginx is reachable on
-EXPOSE 8080
+EXPOSE 7070
 
 # Let supervisord start nginx & php-fpm
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
