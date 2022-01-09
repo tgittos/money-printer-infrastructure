@@ -23,10 +23,9 @@ http {
     server ${API_HOST}:5000;
   }
 
-  # stonks is broken for now
-  # upstream stonks {
-  #   server ${STONKS_HOST}:5001;
-  # }
+  upstream stonks {
+    server ${STONKS_HOST}:5000;
+  }
 
   server {
     listen       80;
@@ -78,14 +77,14 @@ http {
     }
   }
 
-  # server {
-  #   listen       80;
-  #   server_name  mp-stonks.local;
-  #   access_log   logs/api.access.log;
+  server {
+    listen       80;
+    server_name  mp-stonks.local;
+    access_log   logs/api.access.log;
 
-  #   location / {
-  #     proxy_pass      http://stonks;
-  #   }
-  # }
+    location / {
+      proxy_pass      http://stonks;
+    }
+  }
 
 }

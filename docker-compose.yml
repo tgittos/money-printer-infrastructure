@@ -12,6 +12,11 @@ services:
       dockerfile: Dockerfile
       context: ./docker/prometheus
     image: git.gittos.net:5050/money-printer/money-printer-infrastructure/mp-prometheus
+  hasura:
+    build:
+      dockerfile: Dockerfile
+      context: ./docker/hasura
+    image: git.gittos.net:5050/money-printer/money-printer-infrastructure/mp-hasura
 
   platform:
     build:
